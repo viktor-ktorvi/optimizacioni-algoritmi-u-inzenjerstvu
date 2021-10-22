@@ -7,14 +7,14 @@
 
 void permutations_example(int N)
 {
-	std::vector<int> v(N); // vector with 100 ints.
-	std::iota(std::begin(v), std::end(v), 1); // Fill with 0, 1, ..., 99.
+	std::vector<int> v(N); // vector with N ints.
+	std::iota(std::begin(v), std::end(v), 1); // Fill with 1, 2, ... N
 
 	do
 	{
-		for (auto w : v)
+		for (auto element : v)
 		{
-			std::cout << w;
+			std::cout << element;
 		}
 		std::cout << std::endl;
 	} while (std::next_permutation(v.begin(), v.end()));

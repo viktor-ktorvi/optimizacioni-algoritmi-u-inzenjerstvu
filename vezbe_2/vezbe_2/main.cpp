@@ -6,7 +6,7 @@
 #include "examples.h"
 using namespace std;
 
-const int N = 4;
+const int N = 5;
 
 int main() 
 {
