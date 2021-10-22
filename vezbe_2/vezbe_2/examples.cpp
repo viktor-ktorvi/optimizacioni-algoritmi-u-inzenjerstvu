@@ -3,6 +3,7 @@
 #include <vector>
 #include <numeric>
 
+// Ovo valjda ne treba... videcu
 #include "examples.h"
 
 void permutations_example(int N)
