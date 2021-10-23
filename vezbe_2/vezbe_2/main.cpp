@@ -31,6 +31,7 @@ int main()
 
 
 	auto t1 = chrono::high_resolution_clock::now();
+
 	vector<int> permutation(N); // vector with N ints.
 	iota(begin(permutation), end(permutation), 0); // Fill with 0, 1, ... N - 1
 
@@ -73,5 +74,7 @@ int main()
 	cout << "\nShortest distance = " << min_dist << "\nBest permutation:\n";
 	for (auto p : best_perm)
 		cout << p + 1 << ": (" << values[p][0] << ", " << values[p][1] << ")" << endl;
+
+	// TODO Lin-Kernighan heuristic al bas mi se ne cini jednostavnim
 
 }
