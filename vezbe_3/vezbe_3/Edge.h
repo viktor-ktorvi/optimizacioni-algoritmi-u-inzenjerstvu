@@ -11,6 +11,9 @@ private:
 public:
 	Edge(int n1, int n2);
 
+	int& operator[](int idx);
+	int  operator[](int idx) const;
+
 	friend std::ostream& operator<<(std::ostream& os, const Edge& edge);
 };
 
