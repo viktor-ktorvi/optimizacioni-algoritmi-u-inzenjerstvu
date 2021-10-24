@@ -18,6 +18,5 @@ public:
 	friend std::ostream& operator<<(std::ostream& os, const Graph& graph);
 };
 
-//std::ostream& operator<<(std::ostream& os, const Graph& graph);
 #endif // !GRAPH_H_
 
