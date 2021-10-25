@@ -7,7 +7,7 @@
 #include <math.h>
 #include <chrono>
 #include <algorithm>
-
+#include <iomanip>
 #include "utils.h"
 #include "Graph.h"
 #include "Matrix.h"
@@ -34,48 +34,12 @@ int main()
 	double smallest_cost = -1;
 	vector<int> best_variation;
 
+	
+
 	do {
-		vector<int> p_code(variation);
-
-		vector<int> v_nodes(n);
-		iota(begin(v_nodes), end(v_nodes), 0); // Fill with 0, 1, ... N - 1
-
 		vector<vector<int>> edges(n - 1, vector<int>(2, 0));
 		vector<int> node_branch_count(n, 0);
-
-		int i = 0;
-		while (p_code.size() > 0)
-		{
-			sort(v_nodes.begin(), v_nodes.end());
-			int j;
-			for (j = 0; find(p_code.begin(), p_code.end(), v_nodes[j]) != p_code.end(); j++);
-
-			edges[i][0] = p_code[0];
-			edges[i][1] = v_nodes[j];
-
-			node_branch_count[p_code[0]] += 1;
-			node_branch_count[v_nodes[j]] += 1;
-
-			i++;
-
-			p_code.erase(p_code.begin());
-			v_nodes.erase(v_nodes.begin() + j);
-		}
-
-		edges[n - 2][0] = v_nodes[0];
-		edges[n - 2][1] = v_nodes[1];
-
-		node_branch_count[v_nodes[0]] += 1;
-		node_branch_count[v_nodes[1]] += 1;
-
-
-		//for (int i = 0; i < edges.size(); i++)
-		//{
-		//	cout << edges[i][0] << " " << edges[i][1];
-		//	if (i != edges.size() - 1)
-		//		cout << " -- ";
-		//}
-		//cout << endl;
+		get_edges_and_branches(variation, n, edges, node_branch_count);
 
 		double edge_cost = 0.0;
 		for (auto edge : edges)
@@ -98,13 +62,28 @@ int main()
 		}
 
 		++iter_counter;
-		if (iter_counter % 10000 == 0)
-			cout << "Progress: " << (double)iter_counter / (double)num_graphs * 100 << " % of " << num_graphs << "Smallest cost = " << smallest_cost << '\r';
+		if (iter_counter % 100000 == 0)
+			cout << "Progress: " << setw(10) << (double)iter_counter / (double)num_graphs * 100 << " % of " << num_graphs << " Smallest cost = " << smallest_cost << setw(10) <<'\r';
 
-	} while (next_variation_repeating(variation, variation.size()));
+	} while (next_variation_repeating(variation, n));
 
 
-	cout << "Smallest cost = " << smallest_cost << endl;
+	cout << "\nSmallest cost = " << smallest_cost << endl;
 	for (auto v : best_variation)
 		cout << v;
+
+	cout << endl;
+	vector<vector<int>> edges(n - 1, vector<int>(2, 0));
+	vector<int> node_branch_count(n, 0);
+	get_edges_and_branches(best_variation, n, edges, node_branch_count);
+
+	cout << "\nEdges:\n";
+
+	for (int i = 0; i < edges.size(); i++)
+		{
+			cout << edges[i][0] << " " << edges[i][1];
+			if (i != edges.size() - 1)
+				cout << " -- ";
+		}
+		cout << endl;
 }
