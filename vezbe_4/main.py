@@ -2,6 +2,10 @@ import numpy as np
 from scipy.special import spherical_jn
 from matplotlib import pyplot as plt
 
+'''
+    Nule sferne Bessel-ove f-je Njutn-Raphson-ovom metodom
+'''
+
 if __name__ == '__main__':
     n = 1
 
