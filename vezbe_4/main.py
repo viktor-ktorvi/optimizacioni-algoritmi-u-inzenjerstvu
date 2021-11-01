@@ -7,7 +7,7 @@ from matplotlib import pyplot as plt
 '''
 
 if __name__ == '__main__':
-    n = 1
+    n = 2
 
     decimal = 12
     tolerance = 10 ** (-decimal)
@@ -27,16 +27,16 @@ if __name__ == '__main__':
     z = np.linspace(start=0, stop=max(zeros), num=1000)
 
     plt.figure()
-    plt.plot(zeros, np.zeros_like(zeros), 'rx', label='zeros')
     plt.grid()
     plt.plot(z, spherical_jn(n=n, z=z, derivative=False), label='$j_{:d}$'.format(n))
+    plt.plot(zeros, np.zeros_like(zeros), 'ro', label='zeros')
     plt.title('Spherical Bessel function of order {:d} with zeros'.format(n))
-    plt.xlabel('z')
+    plt.xlabel('$z$')
     plt.ylabel('$j_n$')
     plt.legend()
     plt.show()
 
-    print('Zeros:')
+    print('The zeros:')
     zeros.sort()
     for zero in zeros:
         print(zero)
