@@ -1,6 +1,6 @@
 import numpy as np
 from scipy.optimize import linprog
-
+from copy import deepcopy
 
 def next_variation(variation, base):
     carry = 1
@@ -76,7 +76,7 @@ if __name__ == '__main__':
                 f = c.dot(x)
                 if f > f_max:
                     f_max = f
-                    x_best = x
+                    x_best = deepcopy(x)
 
     x_best = x_best.astype(np.int32)
     #%% Ispis
