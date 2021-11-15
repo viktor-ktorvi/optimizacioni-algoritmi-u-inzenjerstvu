@@ -1,6 +1,34 @@
 import numpy as np
 from scipy.optimize import linprog
 
+
+def next_variation(variation, base):
+    carry = 1
+    for i in range(len(variation)):
+        variation[i] += carry
+        if variation[i] == base:
+            variation[i] = 0
+            carry = 1
+        else:
+            carry = 0
+            break
+
+    return carry == 0
+
+
+def change_x(x, x_round, delta_x, variation):
+    j = 0
+    for i in range(len(x)):
+        if x_round[i] == 0:
+            x[i] = 0
+        else:
+            x[i] = x_round[i] + delta_x[variation[j]]
+            j += 1
+            if x[i] < 0:
+                x[i] = 0
+    return x
+
+
 if __name__ == '__main__':
     num_racks = 3
     num_server_types = 4
@@ -30,42 +58,36 @@ if __name__ == '__main__':
 
     res = linprog(c=-c, A_ub=A_ub, b_ub=b_ub, method='simplex')
 
-    x_res_int = np.round(res.x).astype(np.int32)
+    if np.allclose(np.round(res.x).astype(np.int32), res.x):
+        print('Celobrojno')
+        x_best = res.x
+        f_max = -res.fun
+    else:
+        print('Nije celobrojno')
+        num_non_zero = np.count_nonzero(res.x)
 
-    # TODO ne valja, treba proveriti vrednosti oko
-    assert (A_ub @ x_res_int <= b_ub).all()
+        variation = np.zeros(num_non_zero, dtype=np.int32)
+        delta_x = np.array([-3, -2, -1, 0, 1, 2, 3])
 
-    print('{}{:>20}{:>22}'.format('x', 'float', 'int'))
+        x_round = np.round(res.x)
+        x = np.zeros_like(x_round)
 
-    for i in range(43):
-        print('-', end='')
-    print()
+        f_max = 0
+        x_best = None
+        x = change_x(x, x_round, delta_x, variation)
+        if (A_ub @ x <= b_ub).all():
+            f_max = c.dot(x)
+            x_best = x
 
-    counter = 0
-    for j in range(num_server_types):
-        for i in range(num_racks):
-            print('x{:d}{:d}{:20.5f}{:20d}'.format(i + 1, j + 1, res.x[counter], x_res_int[counter]))
-            counter += 1
+        while next_variation(variation, len(delta_x)):
+            x = change_x(x, x_round, delta_x, variation)
+            if (A_ub @ x <= b_ub).all():
+                f = c.dot(x)
+                if f > f_max:
+                    f_max = f
+                    x_best = x
 
-    print()
-    print('Dobijene vrednosti zaokruzene na ceo broj zadovoljavaju nejednakosti')
-    print('Zmax(float) = {:2.2f}\nZmax(int) = {:2.2f}'.format(-res.fun, np.dot(c, x_res_int)))
-    print()
+        print(f_max, x_best)
 
-    # print('{:>11}'.format(''), end='')
-    # for j in range(num_racks):
-    #     print('{:>10}'.format('Ormar %d' % (j + 1)), end='')
-    # print()
-    #
-    # x_mat = x_res_int.reshape((num_server_types, num_racks))
-    #
-    # for j in range(num_server_types):
-    #     print('Server {:d}'.format(j + 1), end='')
-    #     for i in range(num_racks):
-    #         print('{:10d}'.format(x_mat[j, i]), end='')
-    #     print()
-    #
-    # print('Snaga [W]', end='')
-    #
-    # for i in range(num_racks):
-    #     print('{:10d}'.format(p.dot(x_mat[:, i])), end='')
+
+
