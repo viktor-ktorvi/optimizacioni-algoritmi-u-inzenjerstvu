@@ -30,31 +30,22 @@ def change_x(x, x_round, delta_x, variation):
 
 
 if __name__ == '__main__':
-    num_racks = 3
-    num_server_types = 4
-    k = np.array([310, 380, 350, 285])
-    c = np.repeat(k, num_racks)
-
-    b_num_servers_per_rack = np.array([10, 16, 8])
-    A_num_servers_per_rack = np.array([np.tile([1, 0, 0], num_server_types),
-                                       np.tile([0, 1, 0], num_server_types),
-                                       np.tile([0, 0, 1], num_server_types)])
-
     p = np.array([480, 650, 580, 390])
 
-    b_power_per_rack = np.array([6800, 8700, 4300])
+    A_ub = np.array([[1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+                     [0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0],
+                     [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1],
+                     [480, 650, 580, 390, 0, 0, 0, 0, 0, 0, 0, 0],
+                     [0, 0, 0, 0, 480, 650, 580, 390, 0, 0, 0, 0],
+                     [0, 0, 0, 0, 0, 0, 0, 0, 480, 650, 580, 390],
+                     [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
+                     [0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0],
+                     [0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0],
+                     [0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1]])
 
-    power_rack_row = lambda n: [p[(i - n) % num_server_types] if i % num_racks == n else 0 for i in
-                                range(num_racks * num_server_types)]
+    b_ub = np.array([10, 16, 8, 6800, 8700, 4300, 18, 15, 23, 12])
 
-    A_power_per_rack = np.array([power_rack_row(i) for i in range(num_racks)])
-
-    b_num_servers_overall = np.array([18, 15, 23, 12])
-
-    A_num_servers_overall = np.repeat(np.eye(num_server_types), num_racks, axis=1)
-
-    A_ub = np.vstack((A_num_servers_per_rack, A_power_per_rack, A_num_servers_overall))
-    b_ub = np.concatenate((b_num_servers_per_rack, b_power_per_rack, b_num_servers_overall))
+    c = np.array([310, 380, 350, 285, 310, 380, 350, 285, 310, 380, 350, 285])
 
     res = linprog(c=-c, A_ub=A_ub, b_ub=b_ub, method='simplex')
 
@@ -88,17 +79,14 @@ if __name__ == '__main__':
                     x_best = x
 
     x_best = x_best.astype(np.int32)
-    print('{}{:>20}{:>22}'.format('x', 'float', 'int'))
-
-    for i in range(43):
+    #%% Ispis
+    print('{}{:>12}{:>10}'.format('x', 'float', 'int'))
+    for i in range(23):
         print('-', end='')
     print()
 
-    counter = 0
-    for j in range(num_server_types):
-        for i in range(num_racks):
-            print('x{:d}{:d}{:20.5f}{:20d}'.format(i + 1, j + 1, res.x[counter], x_best[counter]))
-            counter += 1
-    print()
-    print('Z(float) = {:2.2f}\nZ(int) = {:2.2f}'.format(-res.fun, f_max))
+    for i in range(len(res.x)):
+        print('x{:d}{:d}{:10.2f}{:10d}'.format(i // 4 + 1, i % 4 + 1, res.x[i], x_best[i]))
+
+    print('\nZ(float) = {:.2f}\nZ(int) = {:.2f}'.format(-res.fun, f_max))
 
