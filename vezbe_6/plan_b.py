@@ -2,6 +2,7 @@ import numpy as np
 from scipy.optimize import linprog
 from copy import deepcopy
 
+
 def next_variation(variation, base):
     carry = 1
     for i in range(len(variation)):
@@ -79,7 +80,7 @@ if __name__ == '__main__':
                     x_best = deepcopy(x)
 
     x_best = x_best.astype(np.int32)
-    #%% Ispis
+    # %% Ispis
     print('{}{:>12}{:>10}'.format('x', 'float', 'int'))
     for i in range(23):
         print('-', end='')
@@ -89,4 +90,3 @@ if __name__ == '__main__':
         print('x{:d}{:d}{:10.2f}{:10d}'.format(i // 4 + 1, i % 4 + 1, res.x[i], x_best[i]))
 
     print('\nZ(float) = {:.2f}\nZ(int) = {:.2f}'.format(-res.fun, f_max))
-
