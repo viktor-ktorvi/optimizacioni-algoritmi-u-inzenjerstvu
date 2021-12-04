@@ -95,6 +95,13 @@ ylabel('cumulative f min')
 set(gca, 'YScale', 'log')
 set(gca, 'XScale', 'log')
 
+figure
+plot(mean(all_cumulative_fs, 2))
+title('Mean best found solution')
+xlabel('Generation [num]')
+ylabel('mean best f')
+set(gca, 'YScale', 'log')
+set(gca, 'XScale', 'log')
 
 function F = f_opt(s, x)
     F = 2^26 - x' * s;
